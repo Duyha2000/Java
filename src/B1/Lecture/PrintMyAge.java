@@ -1,4 +1,4 @@
-package DataType;
+package B1.Lecture;
 
 public class PrintMyAge {
     // tên function/method: gõ "main" -> tab
