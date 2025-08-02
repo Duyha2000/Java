@@ -2,7 +2,7 @@ package B4;
 
 import java.util.Scanner;
 
-public class Main {
+public class Condition {
     public static void main(String[] args) {
         // https://docs.google.com/document/d/1IiCAHcVbdgo_P3UB3dibkdjwODVcDKLippU516uv7qw/edit?tab=t.0
         /*

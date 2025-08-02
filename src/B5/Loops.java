@@ -2,7 +2,7 @@ package B5;
 
 import java.util.Scanner;
 
-public class Main {
+public class Loops {
     public static void main(String[] args) {
 
         // https://docs.google.com/document/d/1n4n52y7RjgHDgp8qLMpNg1Fqi0CQp2zodFrFjWFNrOk/edit?tab=t.0
