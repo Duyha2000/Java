@@ -1,33 +1,45 @@
 package entries;
 
+
 import exceptions.AccountLockedException;
 import exceptions.PasswordIncorrectException;
 
-public class UserAccount {
-    private String username;
-    private String encryptedPassword;
-    int failureCount = 0;
-    private boolean locked = false;
+import java.util.Objects;
 
-    public UserAccount(String username, String encryptedPassword) {
-        this.username = username;
+public class UserAccount {
+    private String userName;
+    private String encryptedPassword;
+    private int failureCount = 0;
+    private boolean locked = false;
+    public static final int MAX_FAILURES = 2;
+
+    public UserAccount(String userName, String encryptedPassword) {
+        this.userName = userName;
         this.encryptedPassword = encryptedPassword;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEncryptedPassword() {
         return encryptedPassword;
     }
 
-    public void incrementFailureCount() {
-        failureCount++;
+    public void setEncryptedPassword(String encryptedPassword) {
+        this.encryptedPassword = encryptedPassword;
     }
 
-    public void resetFailureCount() {
-        failureCount = 0;
+    public int getFailureCount() {
+        return failureCount;
+    }
+
+    public void setFailureCount(int failureCount) {
+        this.failureCount = failureCount;
     }
 
     public boolean isLocked() {
@@ -38,33 +50,52 @@ public class UserAccount {
         this.locked = locked;
     }
 
+    public void incrementFailure() {
+        failureCount++;// starts from 0
+    }
+
+    public void resetFailure() {
+        failureCount = 0;
+    }
+
+    public boolean checkLocked() {
+        return locked;
+    }
+
+
     public void checkPassword(String password) throws AccountLockedException, PasswordIncorrectException {
         if (locked) {
-            throw new AccountLockedException("User '" + username + "' account is locked.");
+            throw new AccountLockedException("User " + userName + " is locked");
         }
-
-        String enc = Utilities.encryptPassword(password);
-
-        if (!enc.equals(encryptedPassword)) {
-            incrementFailureCount();
-            if (failureCount >= 3) { // Giới hạn số lần nhập sai mật khẩu, ví dụ 3 lần
-                setLocked(true);
+        String enc = Utilities.encryptPassword(password); // B1: ma hoa mat khau dang nhap vao
+        // accounts
+        if (!enc.equals((encryptedPassword))) {
+            incrementFailure();
+            if (failureCount >= MAX_FAILURES) {
+                setLocked(true); // setter
+//                lock = true;
             }
             throw new PasswordIncorrectException("Incorrect Password");
         }
-        resetFailureCount(); // Đặt lại failureCount khi đăng nhập thành công
+        resetFailure();
     }
 
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserAccount other)) return false;
-        return username.equals(other.username);
+        if (o == null || getClass() != o.getClass()) return false;
+        UserAccount that = (UserAccount) o;
+        return Objects.equals(userName, that.userName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(userName);
     }
 
     @Override
     public String toString() {
-        return username;
+        return userName;
     }
 }
+

@@ -2,144 +2,125 @@ package entries;
 
 import exceptions.*;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class UserAccessManager {
-    private List<UserAccount> accounts = new ArrayList<>();
 
+    private List<UserAccount> accounts;
+
+    public UserAccessManager() {
+        this.accounts = new ArrayList<>();
+    }
+
+    //  loads user account information from the specified filename
     public void loadAccounts(String filename) throws FileNotFoundException {
+        // Check fileName input - fileName txt in computer
         Utilities.readAccountFile(filename, this);
     }
 
-    public void addUser(String username, String encryptedPassword) throws DuplicateUserException, InvalidCommandException {
-        if (username == null || username.isEmpty() || encryptedPassword == null || encryptedPassword.isEmpty()) {
-            throw new InvalidCommandException("Invalid command");
+    public void addUser(String userName, String encryptedPassword) throws DuplicateUserException, InvalidCommandException {
+        if (userName == null || encryptedPassword == null || userName.trim().isEmpty() || encryptedPassword.trim().isEmpty()) {
+            throw new InvalidCommandException("Invalid Command");
         }
-        UserAccount existing = findUser(username);
-        if (existing != null) {
-            throw new DuplicateUserException("User '" + username + "' account already exists.");
-        }
-        accounts.add(new UserAccount(username, encryptedPassword));
-        System.out.println("Add successfully!!");
-    }
 
-    public void removeUser(String username) throws UserNotFoundException, InvalidCommandException {
-        if (username == null || username.isEmpty()) {
-            throw new InvalidCommandException("Invalid command");
-        }
-        UserAccount user = findUser(username);
-        if (user == null) {
-            throw new UserNotFoundException("User '" + username + "' not found.");
-        }
-        accounts.remove(user);
-    }
-
-    public void verifyAccess(String username, String password) throws UserNotFoundException, AccountLockedException, InvalidCommandException, PasswordIncorrectException {
-        if (username == null || username.isEmpty()) {
-            throw new InvalidCommandException("Invalid command");
-        }
-        UserAccount user = findUser(username);
-        if (user == null) {
-            throw new UserNotFoundException("User '" + username + "' not found.");
-        }
-        // Gọi checkPassword để xử lý logic xác minh
-        user.checkPassword(password); // Sử dụng password plaintext
-    }
-
-    private UserAccount findUser(String username) {
-        for (UserAccount u : accounts) {
-            if (u.getUsername().equals(username)) {
-                return u;
+        for (UserAccount acc : accounts) {
+            if (acc.getUserName().equals(userName)) {
+                throw new DuplicateUserException("User " + userName + " account already exists");
             }
         }
-        return null;
+        accounts.add(new UserAccount(userName, encryptedPassword));
     }
 
-    public static void main(String[] args) {
-//        String password = "mypassword123";
-//        String encryptedPassword = Utilities.encryptPassword(password);
-//        System.out.println("Encrypted password for " + password + ": " + encryptedPassword);
+    public void removeUser(String userName) throws UserNotFoundException, InvalidCommandException {
+        if (userName == null || userName.trim().isEmpty()) {
+            throw new InvalidCommandException("Invalid Command");
+        }
 
-        UserAccessManager manager = new UserAccessManager();
-        System.out.println("User access manager ready.");
+        for (UserAccount acc : accounts) {
+            if (acc.getUserName().equals(userName)) {
+                accounts.remove(acc);
+                return; // Find userName automatically return back to the beginning
+            }
+            throw new UserNotFoundException("User " + userName + " not found.");
+        }
+    }
+
+    // Nhap userName
+    // Nhap password
+    public void verifyAccess(String userName, String encryptedPassword) throws UserNotFoundException, AccountLockedException, InvalidCommandException, PasswordIncorrectException {
+        if (userName == null || userName.trim().isEmpty()) {
+            throw new InvalidCommandException("Invalid Command");
+        }
+
+        for (UserAccount acc : accounts) {
+            if (!acc.getUserName().equals(userName)) {
+                throw new UserNotFoundException("User " + userName + " not found");
+            }
+            acc.checkPassword(encryptedPassword);
+        }
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
         Scanner scanner = new Scanner(System.in);
-        boolean running = true; // Cờ điều khiển vòng lặp
+//        String password1 = "mypassword123";
 
-        while (running) {
+        UserAccessManager userAccessManager = new UserAccessManager();
+        System.out.println("$ java UserAccessManager\n");
+        System.out.println("User access manager ready.\n");
+        String choice = "";
+        do {
             System.out.print("User Access Manager> ");
-            String line = scanner.nextLine().trim();
-            if (line.isEmpty()) continue;
-            Scanner lineScanner = new Scanner(line);
-            if (!lineScanner.hasNext()) continue;
-            String command = lineScanner.next();
 
-            switch (command) {
-                case "exit":
-                    running = false; // Dừng vòng lặp khi người dùng nhập "exit"
+            choice = scanner.next();
+            switch (choice) {
+                case "load": {
+                    String fileName = scanner.next();
+                    userAccessManager.loadAccounts(fileName);
                     break;
-                case "load":
-                    if (lineScanner.hasNext()) {
-                        String filename = lineScanner.next();
-                        try {
-                            manager.loadAccounts(filename);
-                        } catch (FileNotFoundException e) {
-                            System.out.println("Unable to load file: " + filename);
-                        }
-                    } else {
-                        System.out.println("Invalid command");
+                }
+// load src/entries/accounts.txt
+                case "add": {
+                    String addName = scanner.nextLine();
+                    System.out.print("Password:");
+                    String password = scanner.nextLine();
+                    String enc = Utilities.encryptPassword(password);
+                    try {
+                        userAccessManager.addUser(addName, enc);
+                    } catch (InvalidCommandException | DuplicateUserException e) {
+                        System.err.println(e.getMessage());
                     }
                     break;
-                case "add":
-                    if (lineScanner.hasNext()) {
-                        String username = lineScanner.next();
-                        System.out.print("Password: ");
-                        String pw = scanner.nextLine();
-                        String enc = Utilities.encryptPassword(pw);
-                        try {
-                            manager.addUser(username, enc);
-                        } catch (DuplicateUserException | InvalidCommandException e) {
-                            System.out.println(e.getMessage());
-                        }
-                    } else {
-                        System.out.println("Invalid command");
+                }
+
+                case "remove": {
+                    String removeName = scanner.next();
+                    try {
+                        userAccessManager.removeUser(removeName);
+                        System.out.println("Remove successfully!");
+                    } catch (UserNotFoundException | InvalidCommandException e) {
+                        System.err.println(e.getMessage());
                     }
                     break;
-                case "remove":
-                    if (lineScanner.hasNext()) {
-                        String username = lineScanner.next();
-                        try {
-                            manager.removeUser(username);
-                        } catch (UserNotFoundException | InvalidCommandException e) {
-                            System.out.println(e.getMessage());
-                        }
-                    } else {
-                        System.out.println("Invalid command");
+                }
+                case "verify": {
+                    String verifyName = scanner.next();
+                    System.out.println("Password: ");
+                    String password = scanner.next();
+                    String enc = Utilities.encryptPassword(password);
+                    try {
+                        userAccessManager.verifyAccess(verifyName, enc);
+                    } catch (UserNotFoundException | AccountLockedException | InvalidCommandException |
+                             PasswordIncorrectException e) {
+                        System.err.println(e.getMessage());
                     }
                     break;
-                case "verify":
-                    if (lineScanner.hasNext()) {
-                        String username = lineScanner.next();
-                        System.out.print("Password: ");
-                        String pw = scanner.nextLine();
-                        try {
-                            manager.verifyAccess(username, pw); // Sử dụng verifyAccess với password plaintext
-                            System.out.println("Access granted.");
-                        } catch (UserNotFoundException | AccountLockedException | InvalidCommandException |
-                                 PasswordIncorrectException e) {
-                            System.out.println(e.getMessage());
-                        }
-                    } else {
-                        System.out.println("Invalid command");
-                    }
-                    break;
+                }
                 default:
-                    System.out.println("Invalid command");
-                    break;
+                    System.err.println("Invalid Command");
             }
-        }
+        } while (!choice.equals("exit"));
+
     }
 }
-
