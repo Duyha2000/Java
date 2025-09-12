@@ -1,4 +1,20 @@
-package test.java;
+package test.java; /**
+ * ----------------------------------------------------------------------
+ * File: CommandLineIntegrationTest.java
+ * Author: Sandro Fouche
+ * Email: sandro.fouche@montgomerycollege.edu
+ * Course: CMSC204 - Computer Science II
+ * Project: UserAccessManager
+ * Institution: Montgomery College
+ * Year: 2025
+ *
+ * @version 1.0 (Fall 2025)
+ * <p>
+ * Description:
+ * CLI-based tests reimplementing public UserAccessManager functionality
+ * using full command-line interaction.
+ * ----------------------------------------------------------------------
+ */
 
 import org.junit.jupiter.api.Test;
 
