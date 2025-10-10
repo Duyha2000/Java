@@ -1,6 +1,9 @@
 package LinkedList.Singly;
 
-public class LinkedList<T> {
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class LinkedList<T> implements Iterable<T> {
     private Node<T> head; // node đầu
     private int size;  // số lượng phần tử
 
@@ -39,12 +42,6 @@ public class LinkedList<T> {
         }
     }
 
-    public void printList() {
-        for (Node<T> current = head; current != null; current = current.next) {
-            System.out.print(current.data + " ");
-        }
-    }
-
     // Find last element of linked list known as tail
     private Node<T> tail() {
         Node<T> current;
@@ -74,7 +71,6 @@ public class LinkedList<T> {
         if (isEmpty()) throw new IllegalStateException("List is empty");
         // 1 element
         if (head.next == null) {
-            head = null;
             size--;
             return;
         }
@@ -87,18 +83,22 @@ public class LinkedList<T> {
     }
 
     // contains(T element)
+
     public boolean contains(T element) {
         for (Node<T> current = head; current != null; current = current.next) {
-            if (current.data == element || current.data.equals(element)) return true;
+            if (current.data == element || current.data.equals(element))
+                return true;
         }
         return false;
     }
 
     // get(index)
-    public T get(int index) {
+    public T getIndex(int index) {
         if (index < 0 || index > size) throw new IndexOutOfBoundsException("Index cannot be negative");
         Node<T> current = head;
-        for (int i = 0; i < index; i++) current = current.next;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+        }
         return current.data;
     }
 
@@ -108,13 +108,35 @@ public class LinkedList<T> {
     Before: [A] → [B] → [C]
     After:  [A] → [X] → [B] → [C]
      */
-    public void insert(int index, T data) {
-        if (index < 0 || index > size) throw new IndexOutOfBoundsException("Index cannot be negative");
+    public void insertIndex(int index, T data) {
         Node<T> current = head;
         Node<T> newNode = new Node<>(data);
         for (int i = 0; i < index - 1; i++) current = current.next;
-        newNode.next = current.next;
-        current.next = newNode;
+        newNode.next = current.next; // B1
+        current.next = newNode; // B2
+
         size++;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<>() {
+            private Node<T> current = head;
+            private boolean canRemove = false;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public T next() {
+                if (current == null) throw new NoSuchElementException();
+                current = current.next;
+                return current.data;
+            }
+
+        };
+
     }
 }

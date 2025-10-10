@@ -51,6 +51,7 @@ public class GenericLinkedList<T> implements Iterable<T> {
             head.previous = newNode;    // bước 3
             head = newNode;         // bước 4
         }
+        size++;
     }
 
     public void addLast(T data) {
@@ -62,6 +63,7 @@ public class GenericLinkedList<T> implements Iterable<T> {
             tail.next = newNode;    // bước 3
             tail = newNode;         // bước 4
         }
+        size++;
     }
 
     public void insert(T data, int index) {
@@ -71,14 +73,12 @@ public class GenericLinkedList<T> implements Iterable<T> {
         // TH1: chèn đầu
         if (index == 0) {
             addFirst(data);
-            size++;
             return;
         }
 
         // TH2: chèn cuối
         if (index == size) {
             addLast(data);
-            size++;
             return;
         }
         Node current = head;
@@ -116,6 +116,15 @@ public class GenericLinkedList<T> implements Iterable<T> {
         return size == 0;
     }
 
+    // index of song
+    public int indexOf(T element) {
+        int index = 0;
+        for (Node current = head; current != null; current = current.next) {
+            if (java.util.Objects.equals(current.data, element)) return index;
+            index++;
+        }
+        return -1;
+    }
 
     // Removes the element at the specified index
     public T remove(int index) {
@@ -165,17 +174,6 @@ public class GenericLinkedList<T> implements Iterable<T> {
         return size;
     }
 
-    // Converts the list to an array
-    public Object[] toArray() {
-        Object[] array = new Object[size];
-        Node current = head;
-        for (int i = 0; i < size; i++) {
-            array[i] = current.data;
-            current = current.next;
-        }
-        return array;
-    }
-
     // Helper method to remove a node
     private void removeNode(Node node) {
         if (node == null) return;
@@ -221,9 +219,7 @@ public class GenericLinkedList<T> implements Iterable<T> {
 
         @Override
         public T next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException("No next element");
-            }
+            if (!hasNext()) throw new NoSuchElementException("No next element");
             lastReturned = current;
             current = current.next;
             canRemove = true;
@@ -273,6 +269,7 @@ public class GenericLinkedList<T> implements Iterable<T> {
         public int previousIndex() {
             throw new UnsupportedOperationException();
         }
+
 
         @Override
         public void set(T e) {

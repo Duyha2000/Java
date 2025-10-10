@@ -9,17 +9,15 @@ public class Main {
         list.addLast(6);
         list.addLast(8);
 
-        list.printList(); // 5 -> 12 -> 6 -> 8 -> null
 
-        System.out.println("Size: " + list.size()); // 4
-        System.out.println("Contains 12? " + list.contains(12)); // true
-        System.out.println("First: " + list.getFirst()); // 5
-        System.out.println("Last: " + list.getLast()); // 8
-
-        list.removeFirst();
-        list.printList(); // 12 -> 6 -> 8 -> null
-
-        list.removeLast();
-        list.printList(); // 12 -> 6 -> null
+//        Iterator<Integer> it = arr.iterator();
+//        while (it.hasNext()) {
+//            int num = it.next();
+//            System.out.println(num);
+//        }
+        
+        for (int num : list) {
+            System.out.println(num);
+        }
     }
 }

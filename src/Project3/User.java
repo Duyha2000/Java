@@ -1,9 +1,9 @@
 package Project3;
 
 public class User {
-    private String username;
-    private String password;
-    private GenericLinkedList<PlayList> playlists;
+    private final String username;
+    private final String password;
+    private final GenericLinkedList<Playlist> playlists;
 
     public User(String username, String password) {
         this.username = username;
@@ -19,12 +19,22 @@ public class User {
         return password;
     }
 
-    public void addPlayList(PlayList playlist) {
-        playlists.add(playlist);
+    public void addPlaylist(Playlist playlist) {
+        if (playlist == null) throw new IllegalArgumentException("playlist cannot be null");
+        playlists.addLast(playlist);
     }
 
-    public GenericLinkedList<PlayList> getPlaylistsCount() {
+    // App cần số lượng playlists
+    public int getPlaylistCount() {
+        return playlists.size();
+    }
+
+    public GenericLinkedList<Playlist> getPlaylists() {
         return playlists;
     }
-}
 
+    @Override
+    public String toString() {
+        return username;
+    }
+}

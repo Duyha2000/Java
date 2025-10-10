@@ -1,5 +1,7 @@
 package Project3;
 
+import java.util.Objects;
+
 class Song {
     private String title;
     private String artist;
@@ -23,5 +25,15 @@ class Song {
         if (o == null || getClass() != o.getClass()) return false;
         Song song = (Song) o;
         return title.equals(song.title) && artist.equals(song.artist);
+    }
+
+    @Override
+    public String toString() {
+        return title + " - " + artist;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, artist);
     }
 }
