@@ -114,15 +114,14 @@ public class LinkedList<T> implements Iterable<T> {
         for (int i = 0; i < index - 1; i++) current = current.next;
         newNode.next = current.next; // B1
         current.next = newNode; // B2
-
         size++;
     }
 
+    // Single: hasNext / next
     @Override
     public Iterator<T> iterator() {
         return new Iterator<>() {
             private Node<T> current = head;
-            private boolean canRemove = false;
 
             @Override
             public boolean hasNext() {
@@ -132,11 +131,10 @@ public class LinkedList<T> implements Iterable<T> {
             @Override
             public T next() {
                 if (current == null) throw new NoSuchElementException();
+                T data = current.data;
                 current = current.next;
-                return current.data;
+                return data;
             }
-
         };
-
     }
 }

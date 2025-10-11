@@ -1,9 +1,11 @@
 package LinkedList.Doubly;
 
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public class DoublyLinkedList<T> implements Iterable<T> {
+    // https://docs.google.com/spreadsheets/d/1AHleYM1JweYpHPo8dx8kWsNQCkXjRfn-yRd7HVzWBXo/edit?gid=2002710219#gid=2002710219
     private class Node {
         T data;
         Node next;
@@ -84,125 +86,150 @@ public class DoublyLinkedList<T> implements Iterable<T> {
         size--;
     }
 
-
     public boolean isEmpty() {
         return size == 0;
     }
 
-    public void deleteFirst() {
+    public void removeFirst() {
         if (isEmpty()) throw new NoSuchElementException("List is empty");
         if (head == tail) { // Only one element
             head = null;
             tail = null;
-        } else { // More than one element
+        } else {
             head = head.next;
             head.previous = null;
+            size--;
         }
-        size--;
     }
 
-    public void deleteLast() {
+    public void removeLast() {
         if (isEmpty()) throw new NoSuchElementException("List is empty");
         if (head == tail) { // Only one element
             head = null;
             tail = null;
-        } else { // More than one element
+        } else {
             tail = tail.previous;
             tail.next = null;
+            size--;
         }
-        size--;
     }
 
-    public void deleteAtIndex(int index) {
-        if (isEmpty() || index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Invalid index");
-        }
+    public void removeIndex(int index) {
+        if (isEmpty() || index < 0 || index >= size) throw new IndexOutOfBoundsException("Invalid index");
+        if (index == 0) removeFirst();
+        if (index == size - 1) removeLast();
 
-        if (index == 0) deleteFirst();
-        if (index == size - 1) deleteLast();
-
-        // Traverse to the node at index
+        // B1: move pointer
         Node current = head;
         for (int i = 0; i < index; i++) current = current.next;
-
+        // B2: Bnext -> D
         current.previous.next = current.next;
         current.next.previous = current.previous;
         size--;
     }
 
-    @Override
-    public ListIterator<T> iterator() {
-        return new GenericIterator();
+    public void insertIndex(int index, T data) {
+        if (index < 0 || index > size)
+            throw new IndexOutOfBoundsException("Index: " + index);
+        // TH1: chèn đầu
+        if (index == 0) {
+            addFirst(data);
+            return;
+        }
+
+        // TH2: chèn cuối
+        if (index == size) {
+            addLast(data);
+            return;
+        }
+        Node current = head;
+        Node newNode = new Node(data);
+
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+        }
+        newNode.previous = current.previous;
+        newNode.next = current;
+        current.previous.next = newNode;
+        current.previous = newNode;
+
+        size++;
     }
 
-    public class GenericIterator implements ListIterator<T> {
-        private Node current;
-        private Node lastReturned; // Last node returned by next() or previous()
-        private boolean canRemove; // Tracks if remove() is valid
 
-        public GenericIterator() {
-            current = head;
-            lastReturned = null;
-            canRemove = false;
-        }
+    public Iterator<T> iterator() {
+        return new ListIterator<>() {
+            private Node current = head;
+            private Node lastreturned = null;
+            private boolean canRemove = false;
+            // Kiểm tra xem có phần t kế tiếp hay không
+            @Override
+            public boolean hasNext() {
+//                if(current == null) return false;
+//                return true;
+//                return current != null;
+            }
 
-        @Override
-        public boolean hasNext() {
-            return current != null;
-        }
+            @Override
+            public boolean hasPrevious() {
+                // 1️⃣ Nếu iterator đang ở giữa list (current != null) -> Có previous nếu node hiện tại có liên kết previous
+                if(current != null){
+                    if(current.previous == null) return false; // first element (ko có previous)
+                    else return true;
+                }else{ // nam ben ngoai
+                    if(head != null){
+                        return true;
+                    } else
+                        return false;
 
-        @Override
-        public boolean hasPrevious() {
-            // 1️⃣ Nếu iterator đang ở giữa list (current != null) -> Có previous nếu node hiện tại có liên kết previous
-            if (current != null)
-                return current.previous != null;
-                // 2️⃣ Nếu iterator đang ở sau cùng (current == null) -> Có previous nếu list không rỗng (vì có thể lùi về tail)
-            else
-                return head != null;
-        }
+                }
+                //if (current != null)
+                //  return current.previous != null;
+                    // 2️⃣ Nếu iterator đang ở sau cùng (current == null) -> Có previous nếu list không rỗng (vì có thể lùi về tail)
+//                else
+//                    return head != null;
+            }
 
-        @Override
-        public T next() {
-            return null;
-        }
-
-
-        @Override
-        public T previous() {
-            return null;
-        }
-
-        @Override
-        public void remove() {
-
-        }
+            @Override
+            public T next() {
+                return null;
+            }
 
 
-        // Unsupported operations
-        @Override
-        public int nextIndex() {
-            throw new UnsupportedOperationException();
-        }
 
-        @Override
-        public int previousIndex() {
-            throw new UnsupportedOperationException();
-        }
+            @Override
+            public T previous() {
+                return null;
+            }
+
+            @Override
+            public void remove() {
+
+            }
+
+            @Override
+            public int nextIndex() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int previousIndex() {
+                throw new UnsupportedOperationException();
+            }
 
 
-        @Override
-        public void set(T e) {
-            throw new UnsupportedOperationException();
-        }
+            @Override
+            public void set(T e) {
+                throw new UnsupportedOperationException();
+            }
 
-        @Override
-        public void add(T e) {
-            throw new UnsupportedOperationException();
+            @Override
+            public void add(T e) {
+                throw new UnsupportedOperationException();
+            }
+
         }
     }
-
-    ;
-
 }
 
 

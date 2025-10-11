@@ -2,7 +2,7 @@ package LinkedList.Singly;
 
 public class Main {
     public static void main(String[] args) {
-        LinkedList<Integer> list = new LinkedList<Integer>();
+        LinkedList<Integer> list = new LinkedList<>();
 
         list.addLast(5);
         list.addLast(12);
@@ -15,9 +15,9 @@ public class Main {
 //            int num = it.next();
 //            System.out.println(num);
 //        }
-        
-        for (int num : list) {
-            System.out.println(num);
-        }
+
+//        for (int num : list) {
+//            System.out.println(num);
+//        }
     }
 }
