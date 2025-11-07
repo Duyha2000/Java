@@ -1,6 +1,4 @@
 public class TreeNode {
-
-
     // Docs:  https://docs.google.com/document/d/1tMqP4KKEb1KulbEIAvgdF87P8MCs81qP6YXm-IqbQmw/edit?tab=t.0#heading=h.ndugeuvs1kl6
     // Sheet: https://docs.google.com/spreadsheets/d/18Sy8ollKbTTeHBK0WkCuFMiSMTij1QZIR-y7_h5kOMU/edit?usp=sharing
     static class Node { // value, left,right
@@ -45,9 +43,7 @@ public class TreeNode {
 
     static boolean searchValue(Node root, int value) {
         if (root == null) return false;
-
         if (root.value == value) return true;
-
         if (searchValue(root.left, value)) return true;
         if (searchValue(root.right, value)) return true; // phai
         // check -> di trai -> di phai
@@ -60,11 +56,9 @@ public class TreeNode {
         root.right = new Node(3);
         root.left.left = new Node(4);
         root.left.right = new Node(5);
-//        root.right.left = new Node(6);
-//        root.right.right = new Node(7);
-//        root.left.left.left = new Node(8);
-
+        root.right.left = new Node(6);
+        root.right.right = new Node(7);
+        root.left.left.left = new Node(8);
         postorder(root);
-
     }
 }

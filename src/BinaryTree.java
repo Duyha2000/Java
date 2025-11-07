@@ -1,99 +1,89 @@
 public class BinaryTree {
-    static class TreeNode {
-        int val;
-        TreeNode left, right;
+    // Docs:  https://docs.google.com/document/d/1tMqP4KKEb1KulbEIAvgdF87P8MCs81qP6YXm-IqbQmw/edit?tab=t.0#heading=h.ndugeuvs1kl6
+    // Sheet: https://docs.google.com/spreadsheets/d/18Sy8ollKbTTeHBK0WkCuFMiSMTij1QZIR-y7_h5kOMU/edit?usp=sharing
+    static class Node { // value, left,right
+        int value;
+        Node left, right;
 
-        TreeNode(int val) {
-            this.val = val;
+        Node(int value) {
+            this.value = value;
+            this.left = null;
+            this.right = null;
         }
     }
 
-    public static void main(String[] args) {
-        TreeNode root = new TreeNode(1);
-        root.left = new TreeNode(2);
-        root.right = new TreeNode(3);
-        root.left.left = new TreeNode(4);
-        root.left.right = new TreeNode(5);
-
-//        System.out.print("\nInorder: ");
-//        inorder(root);
-//        System.out.print("\nHeight: " + height(root));
-// Gọi hàm deleteTree
-//        deleteTree(root);
-// 🔹 Gán root = null ở ngoài — dòng này rất quan trọng
-// vì nếu không gán, biến root trong main vẫn còn trỏ đến cây
-//        root = null;
-        inorder(root);
-    }
-
-    static void preorder(TreeNode root) {
+    static void preorder(Node root) {
         if (root == null) return;
-        System.out.print(root.val + " ");
-        preorder(root.left);
-        preorder(root.right);
+        System.out.print(root.value + " "); // in
+        preorder(root.left); // di trai
+        preorder(root.right); // di phai
     }
 
-    static void inorder(TreeNode root) {
+    static void inorder(Node root) {
         if (root == null) return;
-        inorder(root.left);
-        System.out.println("🖨️ In " + root.val);
-        inorder(root.right);
+        inorder(root.left); // di trai
+        System.out.print(root.value + " "); // in
+        inorder(root.right); // di phai
     }
 
-    void postorder(TreeNode root) {
+    static void postorder(Node root) {
         if (root == null) return;
-        postorder(root.left);
-        postorder(root.right);
-        System.out.print(root.val + " ");
+        postorder(root.left); // di trai
+        postorder(root.right); // di phai
+        System.out.print(root.value + " "); // in
     }
 
-    // 🔍 Check theo thứ tự: Root → Left → Right ✅ (giống preorder)
-    boolean search(TreeNode root, int target) {
-        if (root == null) return false;           // ① Nếu cây rỗng → không có gì để tìm → false
-        if (root.val == target) return true;      // ② Nếu node hiện tại là target → true
-        // ③ Tìm trong nhánh trái trước (left ✅)
-        if (search(root.left, target)) return true;
-        // ④ Nếu chưa thấy bên trái → tìm tiếp bên phải (right ✅)
-        if (search(root.right, target)) return true;
-        // ⑤ Không thấy ở cả hai bên → false
+    static int countNodes(Node root) {
+        if (root == null) return 0;
+        // count++ -> trai -> phai
+        int leftCount = countNodes(root.left); // 1 ->
+        int rightCount = countNodes(root.right);
+        return 1 + leftCount + rightCount;
+    }
+
+    static boolean searchValue(Node root, int value) {
+        if (root == null) return false;
+        if (root.value == value) return true;
+        if (searchValue(root.left, value)) return true;
+        if (searchValue(root.right, value)) return true; // phai
+        // check -> di trai -> di phai
         return false;
     }
 
-
-    TreeNode insert(TreeNode root, int val) {
-        if (root == null) return new TreeNode(val); // Trường hợp 1: Gặp chỗ trống thì tạo node mới
-        if (val < root.val) root.left = insert(root.left, val); // Trường hợp 2: Giá trị nhỏ hơn -> đi sang trái
-        else if (val > root.val) root.right = insert(root.right, val); // Trường hợp 3: Giá trị lớn hơn -> đi sang phải
-        System.out.println("Return from insert(" + root.val + ")");
-        return root; // Giữ nguyên gốc (sau khi chèn xong)
+    static int height(Node root) {
+        if (root == null) return 0; // Bước 1: Cây rỗng → chiều cao = 0
+        // Bước 2: Chiều cao cây hiện tại = 1 (nút gốc) + chiều cao lớn nhất của cây con
+        return 1 + Math.max(height(root.left), height(root.right));
     }
 
-    static int countNodes(TreeNode root) {
-        if (root == null) return 0;
-        int leftCount = countNodes(root.left);   // số nút ở cây con trái
-        int rightCount = countNodes(root.right); // số nút ở cây con phải
-        int total = 1;               // bắt đầu từ nút hiện tại
-        total += leftCount;          // cộng số nút bên trái
-        total += rightCount;         // cộng số nút bên phải
-        return total;
+    Node insert(Node root, int val) {
+        if (root == null) return new Node(val);
+        if (val < root.value) { // Nếu nhỏ hơn → chèn vào cây con bên trái
+            // Đệ quy chèn vào trái
+            root.left = insert(root.left, val);                    // Cập nhật con trỏ trái
+        } else if (val > root.value) { // Nếu lớn hơn → chèn vào cây con bên phải
+            root.right = insert(root.right, val); // Đệ quy chèn vào phải
+        }
+        return root;  //  Trả lại node hiện tại (để nối với phần trên)
     }
 
-
-    static int height(TreeNode root) {
-        if (root == null) return 0; // Nếu không có nút thì chiều cao là 0
-        int leftHeight = height(root.left);   // chiều cao cây con bên trái
-        int rightHeight = height(root.right); // chiều cao cây con bên phải
-        int currentHeight = 1;                // bắt đầu tính từ nút hiện tại
-        currentHeight += Math.max(leftHeight, rightHeight); // cộng chiều cao lớn hơn trong hai nhánh
-        return currentHeight; // trả về chiều cao của cây hiện tại
-    }
-
-    static void clearTree(TreeNode root) {
-        if (root == null) return; // Cây rỗng → không làm gì
-        clearTree(root.left); // 1. Xóa nhánh trái trước
-        clearTree(root.right); // 2. Xóa nhánh phải sau
-        // 3. Cắt liên kết của nút hiện tại
+    void deleteTree(Node root) {
+        if (root == null) return;
+        deleteTree(root.left);
+        deleteTree(root.right);
         root.left = null;
         root.right = null;
+    }
+
+    public static void main(String[] args) {
+        Node root = new Node(1);
+        root.left = new Node(2);
+        root.right = new Node(3);
+        root.left.left = new Node(4);
+        root.left.right = new Node(5);
+        root.right.left = new Node(6);
+        root.right.right = new Node(7);
+        root.left.left.left = new Node(8);
+        postorder(root);
     }
 }
