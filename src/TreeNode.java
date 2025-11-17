@@ -50,15 +50,33 @@ public class TreeNode {
         return false;
     }
 
+    // https://docs.google.com/spreadsheets/d/18Sy8ollKbTTeHBK0WkCuFMiSMTij1QZIR-y7_h5kOMU/edit?gid=0#gid=0
+    static void deleteNote(Node root) {
+        if (root == null) return;
+        deleteNote(root.left); // trai
+        deleteNote(root.right); // phai
+        root.left = null; // xoa
+        root.right = null;
+    }
+
+    static int height(Node root) {
+        if (root == null) return 0;
+        return 1 + Math.max(height(root.left), height(root.right));
+    }
+
+    static Node insert(Node root, int value) {
+        if (root == null) return new Node(value);
+        if (value < root.value) root.left = insert(root.left, value); // 30
+        if (value > root.value) root.right = insert(root.right, value); // 70
+        // 70 > 50 -> chen vao ben phai
+        // root.right = null -> thay doi gia tri (70)
+        // insert(null,70)
+        // new Node(70);
+        return root;
+    }
+
     public static void main(String[] args) {
-        Node root = new Node(1);
-        root.left = new Node(2);
-        root.right = new Node(3);
-        root.left.left = new Node(4);
-        root.left.right = new Node(5);
-        root.right.left = new Node(6);
-        root.right.right = new Node(7);
-        root.left.left.left = new Node(8);
+        Node root = new Node(30);
         postorder(root);
     }
 }
