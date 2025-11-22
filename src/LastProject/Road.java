@@ -9,12 +9,12 @@ public class Road implements Comparable<Road> {
     private String name;
 
     // Constructor with explicit weight
-    public Road(Town source, Town destination, int degrees, String name) {
+    public Road(Town source, Town destination, int weight, String name) {
         if (source == null || destination == null || name == null)
             throw new IllegalArgumentException("Arguments cannot be null");
         this.source = source;
         this.destination = destination;
-        this.weight = degrees;
+        this.weight = weight;
         this.name = name;
     }
 
@@ -56,29 +56,32 @@ public class Road implements Comparable<Road> {
 
     // Undirected equality: A-B equals B-A if name and weight match
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Road)) return false;
-        Road other = (Road) obj;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Road road = (Road) o;
+        if (weight != road.weight) return false;
+        if (!Objects.equals(name, road.name)) return false;
 
-        boolean sameDirection = this.source.equals(other.source) && this.destination.equals(other.destination);
-        boolean reverseDirection = this.source.equals(other.destination) && this.destination.equals(other.source);
-
-        return (sameDirection || reverseDirection)
-                && this.weight == other.weight
-                && this.name.equals(other.name);
+        // either same orientation or swapped (undirected)
+        boolean direct = Objects.equals(source, road.source) && Objects.equals(destination, road.destination);
+        boolean swapped = Objects.equals(source, road.destination) && Objects.equals(destination, road.source);
+        return direct || swapped;
     }
 
     @Override
     public int hashCode() {
-        // make symmetric for undirected edge by using commutative combination
-        int endSum = source.hashCode() + destination.hashCode();
-        return Objects.hash(endSum, weight, name);
+        // commutative combination to be symmetric for undirected edge
+        int s = source.hashCode();
+        int d = destination.hashCode();
+        int endsCombined = s + d; // commutative
+        return Objects.hash(endsCombined, weight, name);
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%d mi) between %s and %s", name, weight, source, destination);
+        return String.format("%s (%d) between %s and %s", name, weight, source, destination);
     }
-}
 
+    
+}
